@@ -1,0 +1,35 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="com.igorloborec.vsite.LoginFragment"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/username" />
+
+        <EditText
+            android:id="@+id/username_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/password" />
+
+        <EditText
+            android:id="@+id/password_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login"/>
+    </LinearLayout>
+</FrameLayout>

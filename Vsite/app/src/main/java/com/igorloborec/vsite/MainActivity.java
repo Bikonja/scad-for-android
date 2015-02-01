@@ -1,18 +1,18 @@
 package com.igorloborec.vsite;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements LoginFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +20,17 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                .add(R.id.container, new PlaceholderFragment())
+                .commit();
+
+            // TODO: Add actual check if user is logged in (try to log him in beforehand if credentials are saved)
+            boolean isLoggedIn = true;
+
+            if (isLoggedIn) {
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new LoginFragment())
                     .commit();
+            }
         }
     }
 
@@ -46,6 +55,11 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     /**
