@@ -6,6 +6,11 @@
     <string name="action_settings">Postavke</string>
     <string name="username">Korisnik</string>
     <string name="password">Lozinka</string>
-    <string name="login">Prijava</string>
+    <string name="login">Prijavite se</string>
+    <string name="logout">Odjavite se</string>
+    <string name="error_field_required">Niste unijeli vrijednost</string>
+    <string name="error_invalid_username">Neispravan korisnik</string>
+    <string name="error_invalid_password">Neispravna lozinka</string>
+    <string name="error_login_failed">Prijava neuspješna</string>
 
 </resources>
