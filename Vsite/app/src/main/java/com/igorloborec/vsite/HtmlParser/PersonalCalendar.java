@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2015  Bikonja
+ */
+
 package com.igorloborec.vsite.HtmlParser;
 
 import android.util.Log;

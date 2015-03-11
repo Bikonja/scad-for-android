@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2015  Bikonja
+ */
+
 apply plugin: 'com.android.application'
 
 android {

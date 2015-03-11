@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2015  Bikonja
+ */
+
 package com.igorloborec.vsite;
 
 import android.app.Activity;
