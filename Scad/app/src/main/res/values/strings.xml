@@ -7,7 +7,6 @@
 
     <string name="app_name">SCAD</string>
     <string name="PreparingApp">Preparing the awesomeness…</string>
-    <string name="action_settings">Postavke</string>
     <string name="username">Korisnik</string>
     <string name="password">Lozinka</string>
     <string name="login">Prijavite se</string>
@@ -18,13 +17,11 @@
     <string name="error_login_failed">Prijava neuspješna</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_calendar">Kalendar</string>
+    <string name="title_settings">Postavke</string>
+    <string name="title_logout">Odjava</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_example">Example action</string>
+    <string name="navigation_drawer_open">Prikaži navigacijsku ladicu</string>
+    <string name="navigation_drawer_close">Sakrij navigacijsku ladicu</string>
 
 </resources>

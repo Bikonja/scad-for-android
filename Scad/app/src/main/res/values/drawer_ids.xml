@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="drawer_index_calendar">1</integer>
+    <integer name="drawer_index_settings">2</integer>
+    <integer name="drawer_index_logout">3</integer>
+</resources>

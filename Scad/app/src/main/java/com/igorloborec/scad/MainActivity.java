@@ -47,24 +47,30 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        int normalizedPosition = position + 1;
+
+        if (normalizedPosition == getResources().getInteger(R.integer.drawer_index_logout)) {
+            // TODO: logout account
+            finish();
+        }
+            else {
+            // update the main content by replacing fragments
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, PlaceholderFragment.newInstance(normalizedPosition))
+                    .commit();
+        }
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
+        if (number == getResources().getInteger(R.integer.drawer_index_calendar)) {
+            mTitle = getString(R.string.title_calendar);
+        }
+        else if (number == getResources().getInteger(R.integer.drawer_index_settings)) {
+            mTitle = getString(R.string.title_settings);
+        }
+        else if (number == getResources().getInteger(R.integer.drawer_index_logout)) {
+            mTitle = getString(R.string.title_logout);
         }
     }
 
@@ -97,9 +103,9 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

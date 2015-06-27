@@ -17,20 +17,31 @@
         android:layout_marginBottom="8dp" android:visibility="gone" />
 
     <ScrollView android:id="@+id/login_form" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="4dp">
 
         <LinearLayout android:id="@+id/login_form_layout" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical">
 
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="SCAD korisnički račun"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_marginBottom="24dp" />
+
             <EditText android:id="@+id/username_field" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:hint="@string/username"
                 android:inputType="text" android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:layout_marginBottom="4dp" />
 
             <EditText android:id="@+id/password_field" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:hint="@string/password"
                 android:inputType="textPassword" android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:layout_marginBottom="4dp" />
 
             <Button android:id="@+id/login_button" style="?android:textAppearanceSmall"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
