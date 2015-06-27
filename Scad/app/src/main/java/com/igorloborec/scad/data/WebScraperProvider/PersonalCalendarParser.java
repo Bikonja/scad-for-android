@@ -1,8 +1,7 @@
-/*
- * Copyright (C) 2015  Bikonja
- */
+package com.igorloborec.scad.data.WebScraperProvider;
 
-package com.igorloborec.scad.HtmlParser;
+import com.igorloborec.scad.data.PersonalCalendar;
+import com.igorloborec.scad.data.PersonalCalendarEntry;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,32 +10,21 @@ import org.jsoup.select.Elements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Bikonja on 4.3.2015..
+ * Created by Bikonja on 28.6.2015..
  */
-public class PersonalCalendar {
-    public static final String DATE_FORMAT = "dd.MM.yyyy. HH:mm";
-    public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+public class PersonalCalendarParser {
+    final static String DATE_FORMAT = "dd.MM.yyyy. HH:mm";
+    final static SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 
-    protected ArrayList<PersonalCalendarEntry> _entries;
+    public static PersonalCalendar Parse(String html) {
+        PersonalCalendar personalCalendar = new PersonalCalendar();
 
-    public ArrayList<PersonalCalendarEntry> get_entries() {
-        return _entries;
-    }
-
-    public PersonalCalendar()
-    {
-        _entries = new ArrayList<PersonalCalendarEntry>();
-    }
-
-    public PersonalCalendar(String html) {
         Document document = Jsoup.parse(html);
-        _entries = new ArrayList<PersonalCalendarEntry>();
 
         // TODO: Sanity checks, logs, ...
         Elements entryDivs = document.select(".bubbleInfo");
@@ -90,7 +78,9 @@ public class PersonalCalendar {
             entry.set_subjectHolder(subjectHolder);
             entry.set_status(subjectStatus);
 
-            _entries.add(entry);
+            personalCalendar.get_entries().add(entry);
         }
+
+        return personalCalendar;
     }
 }

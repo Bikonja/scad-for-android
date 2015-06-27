@@ -2,7 +2,7 @@
  * Copyright (C) 2015  Bikonja
  */
 
-package com.igorloborec.scad.HtmlParse;
+package com.igorloborec.scad.WebScrape;
 
 import android.content.Context;
 import android.util.Log;

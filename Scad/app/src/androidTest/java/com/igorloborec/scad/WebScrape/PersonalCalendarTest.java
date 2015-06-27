@@ -2,13 +2,14 @@
  * Copyright (C) 2015  Bikonja
  */
 
-package com.igorloborec.scad.HtmlParse;
+package com.igorloborec.scad.WebScrape;
 
 import android.test.AndroidTestCase;
 
-import com.igorloborec.scad.HtmlParser.PersonalCalendar;
-import com.igorloborec.scad.HtmlParser.PersonalCalendarEntry;
+import com.igorloborec.scad.data.PersonalCalendar;
+import com.igorloborec.scad.data.PersonalCalendarEntry;
 import com.igorloborec.scad.R;
+import com.igorloborec.scad.data.WebScraperProvider.PersonalCalendarParser;
 
 import java.util.Date;
 
@@ -37,7 +38,7 @@ public class PersonalCalendarTest extends AndroidTestCase {
     public void testEntriesParsed() {
         int year = 2015 - 1900;
 
-        PersonalCalendar personalCalendar = new PersonalCalendar(getPersonalCalendarHtml());
+        PersonalCalendar personalCalendar = PersonalCalendarParser.Parse(getPersonalCalendarHtml());
         assertTrue("No entries parsed", personalCalendar.get_entries().size() == 8);
 
         int entryIndex = 0;

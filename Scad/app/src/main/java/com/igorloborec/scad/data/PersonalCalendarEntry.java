@@ -2,7 +2,7 @@
  * Copyright (C) 2015  Bikonja
  */
 
-package com.igorloborec.scad.HtmlParser;
+package com.igorloborec.scad.data;
 
 import java.util.Date;
 

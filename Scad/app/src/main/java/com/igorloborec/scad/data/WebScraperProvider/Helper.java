@@ -2,7 +2,7 @@
  * Copyright (C) 2015  Bikonja
  */
 
-package com.igorloborec.scad.HtmlParser;
+package com.igorloborec.scad.data.WebScraperProvider;
 
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
@@ -16,15 +16,15 @@ public class Helper {
 
         if (node != null) {
             for (Node childNode : node.childNodes()) {
-                    if (childNode.nodeName().toLowerCase().equals("br")) {
-                        text += "\n";
+                if (childNode.nodeName().toLowerCase().equals("br")) {
+                    text += "\n";
+                } else {
+                    if (childNode instanceof TextNode) {
+                        text += childNode;
                     } else {
-                        if (childNode instanceof TextNode) {
-                            text += childNode;
-                        } else {
-                            text += GetNodeTextWithNewLines(childNode);
-                        }
+                        text += GetNodeTextWithNewLines(childNode);
                     }
+                }
             }
         }
 
