@@ -1,4 +1,4 @@
-vsite-for-android
+scad-for-android
 =================
 
-A native Android app for the Vsite college portal
+A native Android app for SCAD (SChool ADministration) system made by Vsite
