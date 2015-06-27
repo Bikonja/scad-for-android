@@ -11,7 +11,7 @@ public class AccountGeneral {
     /**
      * Account type id
      */
-    public static final String ACCOUNT_TYPE = "default";
+    public static final String ACCOUNT_TYPE = "SCAD";
 
     /**
      * Account name

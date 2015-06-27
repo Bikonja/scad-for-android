@@ -50,7 +50,7 @@ public class MainActivity extends ActionBarActivity
         int normalizedPosition = position + 1;
 
         if (normalizedPosition == getResources().getInteger(R.integer.drawer_index_logout)) {
-            // TODO: logout account
+            // TODO: logout account - set account token to empty and set autologin and the like to 0
             finish();
         }
             else {
