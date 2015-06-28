@@ -75,7 +75,7 @@ public class ScadAuthenticator extends AbstractAccountAuthenticator {
             if (password != null) {
                 Log.d(LOG_TAG, "Getting token with existing username/password");
                 try {
-                    authToken = AccountGeneral.sServerAuthenticate.userSignIn(account.name, password, authTokenType);
+                    authToken = AccountGeneral.sServerAuthenticate.userSignIn(account.name, password, am.getUserData(account, AccountGeneral.PORTAL_ADDRESS), authTokenType);
                 } catch (Exception e) {
                     Log.d(LOG_TAG, "Failed to retrieve token");
                     e.printStackTrace();

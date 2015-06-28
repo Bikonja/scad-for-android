@@ -9,7 +9,7 @@ package com.igorloborec.scad.authentication;
  */
 public class DummyScadAuthenticate implements ScadAuthenticate {
     @Override
-    public String userSignIn(String user, String pass, String authType) throws Exception {
+    public String userSignIn(String user, String pass, String portalUrl, String authType) throws Exception {
         return "dummyToken";
     }
 }

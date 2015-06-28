@@ -7,7 +7,7 @@ package com.igorloborec.scad.data;
 import java.util.Date;
 
 public class PersonalCalendarEntry {
-    // possible boxes:
+    // some possible boxes:
     // - green
     // - purple
     // - yellow
@@ -15,6 +15,7 @@ public class PersonalCalendarEntry {
     // - gray (example: https://student.vsite.hr/?q=student/calendar/2015-01-29)
     // - teal (example: https://student.vsite.hr/?q=student/calendar/2015-02-19)
 
+    protected Type _type;
     protected Date _start;
     protected Date _end;
     protected String _duration;
@@ -25,6 +26,14 @@ public class PersonalCalendarEntry {
     protected String _location;
     protected String _subjectHolder;
     protected String _status;
+
+    public Type get_type() {
+        return _type;
+    }
+
+    public void set_type(Type _type) {
+        this._type = _type;
+    }
 
     public Date get_start() {
         return _start;
@@ -104,5 +113,16 @@ public class PersonalCalendarEntry {
 
     public void set_status(String _status) {
         this._status = _status;
+    }
+
+    public enum Type {
+        PASSED,
+        PLANNED_NOT_HELD,
+        PASSED_IN_ALTERNATE_ENTRY,
+        FAILED,
+        NOT_HELD,
+        OTHER,
+        PASSED_IN_PREVIOUS_ENTRY,
+        OTHER_GROUPS_ENTRY
     }
 }

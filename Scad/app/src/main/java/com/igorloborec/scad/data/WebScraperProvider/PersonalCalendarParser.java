@@ -36,6 +36,7 @@ public class PersonalCalendarParser {
             Element triggerBox = entryDiv.select("div.trigger").get(0);
             Element popupBox = entryDiv.select("div.popup").get(0);
 
+            PersonalCalendarEntry.Type entryType = GetEntryTypeFromDiv(triggerBox);
             String[] triggerBoxEntries = Helper.GetNodeTextWithNewLines(triggerBox).split("\\r?\\n");
             int triggerBoxIndex = triggerBoxEntries[0].isEmpty() ? 1 : 0;
             String subjectAbbr = triggerBoxEntries[triggerBoxIndex].trim();
@@ -66,6 +67,7 @@ public class PersonalCalendarParser {
             String subjectHolder = popupLines[3].trim();
             String subjectStatus = popupLines[popupLines.length - 1].trim();
 
+            entry.set_type(entryType);
             entry.set_subjectAbbr(subjectAbbr);
             entry.set_subjectType(subjectType);
             entry.set_subjectGroup(subjectGroup);
@@ -82,5 +84,31 @@ public class PersonalCalendarParser {
         }
 
         return personalCalendar;
+    }
+
+    private static PersonalCalendarEntry.Type GetEntryTypeFromDiv(Element triggerBox) {
+        PersonalCalendarEntry.Type type = PersonalCalendarEntry.Type.OTHER;
+
+        if (triggerBox != null) {
+            if (triggerBox.hasClass("act-green")) {
+                type = PersonalCalendarEntry.Type.PASSED;
+            } else if (triggerBox.hasClass("act-yellow")) {
+                type = PersonalCalendarEntry.Type.PLANNED_NOT_HELD;
+            } else if (triggerBox.hasClass("act-orange")) {
+                type = PersonalCalendarEntry.Type.PASSED_IN_ALTERNATE_ENTRY;
+            } else if (triggerBox.hasClass("act-red")) {
+                type = PersonalCalendarEntry.Type.FAILED;
+            } else if (triggerBox.hasClass("act-violet")) {
+                type = PersonalCalendarEntry.Type.NOT_HELD;
+            } else if (triggerBox.hasClass("act-violet-light")) {
+                type = PersonalCalendarEntry.Type.OTHER;
+            } else if (triggerBox.hasClass("act-blue")) {
+                type = PersonalCalendarEntry.Type.PASSED_IN_PREVIOUS_ENTRY;
+            } else if (triggerBox.hasClass("act-languida")) {
+                type = PersonalCalendarEntry.Type.OTHER_GROUPS_ENTRY;
+            }
+        }
+
+        return type;
     }
 }

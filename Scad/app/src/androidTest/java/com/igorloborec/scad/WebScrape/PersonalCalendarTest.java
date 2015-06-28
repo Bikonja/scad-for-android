@@ -46,6 +46,7 @@ public class PersonalCalendarTest extends AndroidTestCase {
         // assert first entry
         assertTrue(String.format("Entry %1s not parsed", entryIndex), personalCalendar.get_entries().size() >= entryIndex + 1);
         PersonalCalendarEntry entry = personalCalendar.get_entries().get(entryIndex);
+        assertEquals(String.format("Entry %1s: type not correct", entryIndex), PersonalCalendarEntry.Type.NOT_HELD, entry.get_type());
         assertEquals(String.format("Entry %1s: subjectAbbr not correct", entryIndex), "DOSI", entry.get_subjectAbbr());
         assertEquals(String.format("Entry %1s: subjectType not correct", entryIndex), "P1", entry.get_subjectType());
         assertEquals(String.format("Entry %1s: subjectGroup not correct", entryIndex), "U1", entry.get_subjectGroup());
@@ -61,6 +62,7 @@ public class PersonalCalendarTest extends AndroidTestCase {
         // assert second entry
         assertTrue(String.format("Entry %1s not parsed", entryIndex), personalCalendar.get_entries().size() >= entryIndex + 1);
         entry = personalCalendar.get_entries().get(entryIndex);
+        assertEquals(String.format("Entry %1s: type not correct", entryIndex), PersonalCalendarEntry.Type.PASSED, entry.get_type());
         assertEquals(String.format("Entry %1s: subjectAbbr not correct", entryIndex), "SRM", entry.get_subjectAbbr());
         assertEquals(String.format("Entry %1s: subjectType not correct", entryIndex), "P1", entry.get_subjectType());
         assertEquals(String.format("Entry %1s: subjectGroup not correct", entryIndex), "U1", entry.get_subjectGroup());

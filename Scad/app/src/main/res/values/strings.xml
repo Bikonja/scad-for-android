@@ -23,5 +23,7 @@
 
     <string name="navigation_drawer_open">Prikaži navigacijsku ladicu</string>
     <string name="navigation_drawer_close">Sakrij navigacijsku ladicu</string>
+    <string name="portal_address">Adresa portala</string>
+    <string name="error_invalid_portal_address">Adresa portala koju ste unijeli nije ispravna ili portal nije dostupan</string>
 
 </resources>

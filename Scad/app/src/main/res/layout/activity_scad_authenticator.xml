@@ -43,6 +43,13 @@
                 android:singleLine="true"
                 android:layout_marginBottom="4dp" />
 
+            <EditText android:id="@+id/address_field" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="@string/portal_address"
+                android:text="https://student.vsite.hr"
+                android:inputType="textUri" android:maxLines="1"
+                android:singleLine="true"
+                android:layout_marginBottom="4dp" />
+
             <Button android:id="@+id/login_button" style="?android:textAppearanceSmall"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="16dp" android:text="@string/login"

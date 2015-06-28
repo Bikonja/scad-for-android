@@ -24,6 +24,12 @@ import android.widget.TextView;
 
 import com.igorloborec.scad.R;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
+
 /**
  * A login screen that offers login via username/password.
  */
@@ -50,6 +56,7 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
     // UI references.
     private EditText mUsernameView;
     private EditText mPasswordView;
+    private EditText mPortalAddressView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -61,6 +68,7 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
         // Set up the login form.
         mUsernameView = (EditText) findViewById(R.id.username_field);
         mPasswordView = (EditText) findViewById(R.id.password_field);
+        mPortalAddressView = (EditText) findViewById(R.id.address_field);
 
         Button mLoginButton = (Button) findViewById(R.id.login_button);
         mLoginButton.setOnClickListener(new OnClickListener() {
@@ -99,10 +107,12 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
         // Reset errors.
         mUsernameView.setError(null);
         mPasswordView.setError(null);
+        mPortalAddressView.setError(null);
 
         // Store values at the time of the login attempt.
         String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String portalAddress = mPortalAddressView.getText().toString();
         final String accountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
 
         boolean cancel = false;
@@ -127,6 +137,17 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
             cancel = true;
         }
 
+        // Check for a valid portalAddress, if the user entered one
+        if (TextUtils.isEmpty(portalAddress)) {
+            mPortalAddressView.setError(getString(R.string.error_field_required));
+            focusView = mPortalAddressView;
+            cancel = true;
+        } else if (!isPortalAddressValid(portalAddress)) {
+            mPortalAddressView.setError(getString(R.string.error_invalid_portal_address));
+            focusView = mPortalAddressView;
+            cancel = true;
+        }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -135,7 +156,7 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(username, password, mAuthTokenType, accountType);
+            mAuthTask = new UserLoginTask(username, password, portalAddress, accountType);
             mAuthTask.execute((Void) null);
         }
     }
@@ -146,6 +167,22 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
 
     private boolean isPasswordValid(String password) {
         return true; // As a consumer of the portal we don't know the password requirements
+    }
+
+    private boolean isPortalAddressValid(String portalAddress) {
+        boolean isValid = false;
+
+        // Do a simple check if we get a HTTP 200 for this address
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(portalAddress);
+        try {
+            HttpResponse response = httpClient.execute(httpGet);
+            isValid = response.getStatusLine().getStatusCode() == 200;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return isValid;
     }
 
     /**
@@ -200,7 +237,9 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
 
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
-        final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+        String accountPortalAddress = intent.getStringExtra(AccountGeneral.PORTAL_ADDRESS);
+        String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
+        final Account account = new Account(accountName, accountType);
 
         if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
             Log.d(LOG_TAG, "finishLogin > addAccountExplicitly");
@@ -210,6 +249,7 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             mAccountManager.addAccountExplicitly(account, accountPassword, null);
+            mAccountManager.setUserData(account, AccountGeneral.PORTAL_ADDRESS, accountPortalAddress);
             mAccountManager.setAuthToken(account, authtokenType, authtoken);
         } else {
             Log.d(LOG_TAG, "finishLogin > setPassword");
@@ -229,13 +269,13 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
 
         private final String mUsername;
         private final String mPassword;
-        private final String mAuthTokenType;
+        private final String mPortalUrl;
         private final String mAccountType;
 
-        UserLoginTask(String username, String password, String authTokenType, String accountType) {
+        UserLoginTask(String username, String password, String portalUrl, String accountType) {
             mUsername = username;
             mPassword = password;
-            mAuthTokenType = authTokenType;
+            mPortalUrl = portalUrl;
             mAccountType = accountType;
         }
 
@@ -247,10 +287,11 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
             Bundle data = new Bundle();
 
             try {
-                authtoken = AccountGeneral.sServerAuthenticate.userSignIn(mUsername, mPassword, mAuthTokenType);
+                authtoken = AccountGeneral.sServerAuthenticate.userSignIn(mUsername, mPassword, mPortalUrl, mAuthTokenType);
 
                 data.putString(AccountManager.KEY_ACCOUNT_NAME, mUsername);
                 data.putString(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
+                data.putString(AccountGeneral.PORTAL_ADDRESS, mPortalUrl);
                 data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
                 data.putString(PARAM_USER_PASS, mPassword);
 

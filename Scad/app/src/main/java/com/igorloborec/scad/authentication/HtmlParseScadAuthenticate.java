@@ -9,7 +9,7 @@ package com.igorloborec.scad.authentication;
  */
 public class HtmlParseScadAuthenticate implements ScadAuthenticate {
     @Override
-    public String userSignIn(String user, String pass, String authType) throws Exception {
+    public String userSignIn(String user, String pass, String portalUrl, String authType) throws Exception {
         /*
         Direct copy from
         https://github.com/Udinic/AccountAuthenticator/blob/master/src/com/udinic/accounts_authenticator_example/authentication/ParseComServerAuthenticate.java
