@@ -17,13 +17,13 @@
     <string name="error_login_failed">Prijava neuspješna</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="title_calendar">Kalendar</string>
+    <string name="title_calendar">Raspored</string>
     <string name="title_settings">Postavke</string>
     <string name="title_logout">Odjava</string>
 
     <string name="navigation_drawer_open">Prikaži navigacijsku ladicu</string>
     <string name="navigation_drawer_close">Sakrij navigacijsku ladicu</string>
     <string name="portal_address">Adresa portala</string>
-    <string name="error_invalid_portal_address">Adresa portala koju ste unijeli nije ispravna ili portal nije dostupan</string>
+    <string name="error_invalid_portal_address">Adresa portala koju ste unijeli nije ispravna</string>
 
 </resources>

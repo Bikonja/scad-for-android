@@ -18,7 +18,7 @@ public class AccountGeneral {
      */
     public static final String ACCOUNT_NAME = null;
 
-    public static final String PORTAL_ADDRESS = null;
+    public static final String PORTAL_ADDRESS = "PORTAL_URL";
 
     /**
      * Auth token types

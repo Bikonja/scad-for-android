@@ -59,6 +59,7 @@ public class HtmlParseScadAuthenticate implements ScadAuthenticate {
 
         return authtoken;
         */
+        // Returned token should be in form SESSIONCOOKIENAME+SESSIONCOOKIEVALUE
         return null;
     }
 }

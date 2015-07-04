@@ -14,21 +14,23 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.igorloborec.scad.R;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A login screen that offers login via username/password.
@@ -118,15 +120,7 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
         boolean cancel = false;
         View focusView = null;
 
-
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
+        // Check for a valid username.
         if (TextUtils.isEmpty(username)) {
             mUsernameView.setError(getString(R.string.error_field_required));
             focusView = mUsernameView;
@@ -134,6 +128,17 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
         } else if (!isUsernameValid(username)) {
             mUsernameView.setError(getString(R.string.error_invalid_username));
             focusView = mUsernameView;
+            cancel = true;
+        }
+
+        // Check for password validity.
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
             cancel = true;
         }
 
@@ -146,6 +151,9 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
             mPortalAddressView.setError(getString(R.string.error_invalid_portal_address));
             focusView = mPortalAddressView;
             cancel = true;
+        }
+        else {
+            portalAddress = URLUtil.guessUrl(portalAddress);
         }
 
         if (cancel) {
@@ -172,15 +180,7 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
     private boolean isPortalAddressValid(String portalAddress) {
         boolean isValid = false;
 
-        // Do a simple check if we get a HTTP 200 for this address
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(portalAddress);
-        try {
-            HttpResponse response = httpClient.execute(httpGet);
-            isValid = response.getStatusLine().getStatusCode() == 200;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        isValid = Patterns.WEB_URL.matcher(portalAddress).matches();
 
         return isValid;
     }
