@@ -20,6 +20,7 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
@@ -92,7 +93,8 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
         }
 
         if (accountName != null) {
-            ((TextView)findViewById(R.id.username_field)).setText(accountName);
+            mUsernameView.setText(accountName);
+            mPasswordView.requestFocus();
         }
     }
 

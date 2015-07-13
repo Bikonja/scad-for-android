@@ -4,12 +4,17 @@
 
 package com.igorloborec.scad;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,8 +22,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import com.igorloborec.scad.authentication.AccountGeneral;
+
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -30,9 +39,17 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private AccountManager mAccountManager;
+    private Account mAccount;
+    private String mAccountToken = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mAccountManager = AccountManager.get(this);
+        accountLoginOrCreate();
+
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -45,12 +62,61 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    private void accountLoginOrCreate() {
+        final Account availableAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        if (availableAccounts.length == 0) {
+            addNewAccount();
+        } else {
+            mAccount = availableAccounts[0];
+
+            final AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(mAccount, AccountGeneral.AUTHTOKEN_TYPE_DEFAULT, null, this, null, null);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Bundle bnd = future.getResult();
+
+                        mAccountToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                    } catch (Exception e) {
+                        Log.d(LOG_TAG, "Get token failed: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+    }
+
+    private void addNewAccount() {
+        final AccountManagerFuture<Bundle> future = mAccountManager.addAccount(AccountGeneral.ACCOUNT_TYPE, AccountGeneral.AUTHTOKEN_TYPE_DEFAULT, null, null, this, new AccountManagerCallback<Bundle>() {
+            @Override
+            public void run(AccountManagerFuture<Bundle> future) {
+                try {
+                    Bundle bnd = future.getResult();
+
+                    accountLoginOrCreate();
+                } catch (Exception e) {
+                    Log.d(LOG_TAG, "Account create failed: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }, null);
+    }
+
+    private void logoutAccount() {
+        if (mAccount != null) {
+            mAccountManager.clearPassword(mAccount);
+        }
+        mAccountManager.invalidateAuthToken(AccountGeneral.ACCOUNT_TYPE, mAccountToken);
+    }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         int normalizedPosition = position + 1;
 
         if (normalizedPosition == getResources().getInteger(R.integer.drawer_index_logout)) {
-            // TODO: logout account - set account token to empty and set autologin and the like to 0
+            logoutAccount();
             finish();
         }
             else {
@@ -61,6 +127,8 @@ public class MainActivity extends ActionBarActivity
                     .commit();
         }
     }
+
+
 
     public void onSectionAttached(int number) {
         if (number == getResources().getInteger(R.integer.drawer_index_calendar)) {

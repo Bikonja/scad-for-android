@@ -24,7 +24,6 @@ public class AccountGeneral {
      * Auth token types
      */
     public static final String AUTHTOKEN_TYPE_DEFAULT = "Default";
-    public static final String AUTHTOKEN_TYPE_FULL_ACCESS_LABEL = "Default access to Vsite portal";
 
     /**
      * Instance of implementation for server authentication class
