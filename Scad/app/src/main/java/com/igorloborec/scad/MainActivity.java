@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Button;
 
 import com.igorloborec.scad.authentication.AccountGeneral;
 
@@ -48,25 +49,45 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
 
         mAccountManager = AccountManager.get(this);
-        accountLoginOrCreate();
+        accountLoginOrCreate(this);
 
-        setContentView(R.layout.activity_main);
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        setupView(this);
     }
 
-    private void accountLoginOrCreate() {
+    private void setupView(final Activity activity) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mAccountToken != null && !mAccountToken.isEmpty()) {
+                    activity.setContentView(R.layout.activity_main);
+
+                    mNavigationDrawerFragment = (NavigationDrawerFragment)
+                            getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+                    mTitle = activity.getTitle();
+
+                    // Set up the drawer.
+                    mNavigationDrawerFragment.setUp(
+                            R.id.navigation_drawer,
+                            (DrawerLayout) activity.findViewById(R.id.drawer_layout));
+                } else {
+                    activity.setContentView(R.layout.activity_main_not_logged_in);
+                    Button login_button = (Button) activity.findViewById(R.id.login_button);
+                    login_button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            accountLoginOrCreate(activity);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void accountLoginOrCreate(final Activity activity) {
         final Account availableAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 
         if (availableAccounts.length == 0) {
-            addNewAccount();
+            addNewAccount(activity);
         } else {
             mAccount = availableAccounts[0];
 
@@ -79,23 +100,25 @@ public class MainActivity extends ActionBarActivity
                         Bundle bnd = future.getResult();
 
                         mAccountToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                        setupView(activity);
                     } catch (Exception e) {
                         Log.d(LOG_TAG, "Get token failed: " + e.getMessage());
                         e.printStackTrace();
+                        setupView(activity);
                     }
                 }
             }).start();
         }
     }
 
-    private void addNewAccount() {
+    private void addNewAccount(final Activity activity) {
         final AccountManagerFuture<Bundle> future = mAccountManager.addAccount(AccountGeneral.ACCOUNT_TYPE, AccountGeneral.AUTHTOKEN_TYPE_DEFAULT, null, null, this, new AccountManagerCallback<Bundle>() {
             @Override
             public void run(AccountManagerFuture<Bundle> future) {
                 try {
                     Bundle bnd = future.getResult();
 
-                    accountLoginOrCreate();
+                    accountLoginOrCreate(activity);
                 } catch (Exception e) {
                     Log.d(LOG_TAG, "Account create failed: " + e.getMessage());
                     e.printStackTrace();
@@ -124,7 +147,7 @@ public class MainActivity extends ActionBarActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.container, PlaceholderFragment.newInstance(normalizedPosition))
-                    .commit();
+                    .commitAllowingStateLoss();
         }
     }
 
@@ -152,7 +175,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+        if (mNavigationDrawerFragment != null && !mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
