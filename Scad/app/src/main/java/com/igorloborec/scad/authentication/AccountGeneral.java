@@ -28,5 +28,5 @@ public class AccountGeneral {
     /**
      * Instance of implementation for server authentication class
      */
-    public static final ScadAuthenticate sServerAuthenticate = new DummyScadAuthenticate();
+    public static final ScadAuthenticate sServerAuthenticate = new HtmlParseScadAuthenticate();
 }

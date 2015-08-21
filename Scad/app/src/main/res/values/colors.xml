@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="CalendarEntry_BgColor_PASSED">0xFF8AE78D</integer>
+    <integer name="CalendarEntry_BgColor_PLANNED_NOT_HELD">0x99F3DB1E</integer>
+    <integer name="CalendarEntry_BgColor_PASSED_IN_ALTERNATE_ENTRY">0x99F7AE39</integer>
+    <integer name="CalendarEntry_BgColor_FAILED">0x99E61414</integer>
+    <integer name="CalendarEntry_BgColor_NOT_HELD">0x99F073D3</integer>
+    <integer name="CalendarEntry_BgColor_OTHER">0x99F3A9E2</integer>
+    <integer name="CalendarEntry_BgColor_PASSED_IN_PREVIOUS_ENTRY">0x991EF3DC</integer>
+    <integer name="CalendarEntry_BgColor_OTHER_GROUPS_ENTRY">0x99C1E7DB</integer>
+</resources>

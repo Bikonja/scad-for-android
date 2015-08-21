@@ -27,5 +27,6 @@
     <string name="error_invalid_portal_address">Adresa portala koju ste unijeli nije ispravna</string>
 
     <string name="not_logged_in">Niste prijavljeni</string>
+    <string name="error_unknown">Došlo je do greške</string>
 
 </resources>

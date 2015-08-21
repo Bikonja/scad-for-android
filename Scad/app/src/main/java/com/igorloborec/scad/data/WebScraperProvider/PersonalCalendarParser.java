@@ -24,9 +24,9 @@ public class PersonalCalendarParser {
     public static PersonalCalendar Parse(String html) {
         PersonalCalendar personalCalendar = new PersonalCalendar();
 
+        // TODO: Sanity checks, logs, ...
         Document document = Jsoup.parse(html);
 
-        // TODO: Sanity checks, logs, ...
         Elements entryDivs = document.select(".bubbleInfo");
 
         Pattern datesPattern = Pattern.compile("([0-9]{2}\\.[0-9]{2}\\.[0-9]{4}\\.) ([0-9]{2}:[0-9]{2}) ([0-9]{2}:[0-9]{2}) ([0-9]h)");
@@ -40,11 +40,12 @@ public class PersonalCalendarParser {
             String[] triggerBoxEntries = Helper.GetNodeTextWithNewLines(triggerBox).split("\\r?\\n");
             int triggerBoxIndex = triggerBoxEntries[0].isEmpty() ? 1 : 0;
             String subjectAbbr = triggerBoxEntries[triggerBoxIndex].trim();
-            String subjectType = triggerBoxEntries[triggerBoxIndex + 1].trim();
-            String subjectGroup = triggerBoxEntries[triggerBoxIndex + 2].trim();
+            String subjectType = triggerBoxEntries.length > triggerBoxIndex + 1 ? triggerBoxEntries[triggerBoxIndex + 1].trim() : "";
+            String subjectGroup = triggerBoxEntries.length > triggerBoxIndex + 2 ? triggerBoxEntries[triggerBoxIndex + 2].trim() : "";
 
             String[] popupLines = Helper.GetNodeTextWithNewLines(popupBox).split("\\r?\\n");
-            String subjectUrl = popupBox.select("a").get(0).attr("href");
+            Elements subjectLinks = popupBox.select("a");
+            String subjectUrl = subjectLinks != null && !subjectLinks.isEmpty() ? subjectLinks.get(0).attr("href") : "";
             String subjectLocation = popupLines[1].trim();
             Date subjectStart = null;
             Date subjectEnd = null;
@@ -64,7 +65,7 @@ public class PersonalCalendarParser {
                     subjectDuration = "";
                 }
             }
-            String subjectHolder = popupLines[3].trim();
+            String subjectHolder = popupLines.length > 3 ? popupLines[3].trim() : "";
             String subjectStatus = popupLines[popupLines.length - 1].trim();
 
             entry.set_type(entryType);

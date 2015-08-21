@@ -291,12 +291,15 @@ public class ScadAuthenticatorActivity extends AccountAuthenticatorActivity {
             try {
                 authtoken = AccountGeneral.sServerAuthenticate.userSignIn(mUsername, mPassword, mPortalUrl, mAuthTokenType);
 
-                data.putString(AccountManager.KEY_ACCOUNT_NAME, mUsername);
-                data.putString(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
-                data.putString(AccountGeneral.PORTAL_ADDRESS, mPortalUrl);
-                data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
-                data.putString(PARAM_USER_PASS, mPassword);
-
+                if (authtoken != null) {
+                    data.putString(AccountManager.KEY_ACCOUNT_NAME, mUsername);
+                    data.putString(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
+                    data.putString(AccountGeneral.PORTAL_ADDRESS, mPortalUrl);
+                    data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
+                    data.putString(PARAM_USER_PASS, mPassword);
+                } else {
+                    data.putString(KEY_ERROR_MESSAGE, getString(R.string.error_login_failed));
+                }
             } catch (Exception e) {
                 data.putString(KEY_ERROR_MESSAGE, e.getMessage());
             }

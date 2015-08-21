@@ -24,6 +24,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.Button;
 
 import com.igorloborec.scad.authentication.AccountGeneral;
+import com.igorloborec.scad.data.IScadProvider;
+import com.igorloborec.scad.data.WebScraperProvider.WebScraperProvider;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -43,6 +45,15 @@ public class MainActivity extends ActionBarActivity
     private AccountManager mAccountManager;
     private Account mAccount;
     private String mAccountToken = null;
+    private String mPortalUrl;
+
+    public String getmAccountToken() {
+        return mAccountToken;
+    }
+
+    public String getmPortalUrl() {
+        return mPortalUrl;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +111,8 @@ public class MainActivity extends ActionBarActivity
                         Bundle bnd = future.getResult();
 
                         mAccountToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                        mPortalUrl = mAccountManager.getUserData(mAccount, AccountGeneral.PORTAL_ADDRESS);
+
                         setupView(activity);
                     } catch (Exception e) {
                         Log.d(LOG_TAG, "Get token failed: " + e.getMessage());
@@ -229,7 +242,24 @@ public class MainActivity extends ActionBarActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            int section = getArguments().getInt(ARG_SECTION_NUMBER);
+            IScadProvider scadProvider = new WebScraperProvider((MainActivity)getActivity());
+
+            View rootView = null;
+
+            if (section == getResources().getInteger(R.integer.drawer_index_calendar)) {
+                rootView = inflater.inflate(R.layout.fragment_calendar, container, false);
+                CalendarFragment.setUp(rootView, scadProvider);
+            }
+            else if (section == getResources().getInteger(R.integer.drawer_index_settings)) {
+                rootView = inflater.inflate(R.layout.fragment_settings, container, false);
+            }
+            else if (section == getResources().getInteger(R.integer.drawer_index_logout)) {
+                rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            } else {
+                rootView = inflater.inflate(R.layout.fragment_error, container, false);
+            }
+
             return rootView;
         }
 
