@@ -44,11 +44,11 @@ public class Helper {
             authCookie.setPath(cookie.getPath());
             httpClient.getCookieStore().addCookie(authCookie);
 
-            try {
+            /*try {
                 html = new AsyncTask<Void, Void, String>(){
                     @Override
                     protected String doInBackground(Void... params) {
-                        String html = null;
+                        String html = null;*/
 
                         try {
                             HttpResponse response = httpClient.execute(httpGet);
@@ -62,11 +62,11 @@ public class Helper {
                         }
 
                         return html;
-                    }
+                    /*}
                 }.execute().get();
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
 
         return html;

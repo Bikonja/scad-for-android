@@ -27,6 +27,8 @@ import com.igorloborec.scad.authentication.AccountGeneral;
 import com.igorloborec.scad.data.IScadProvider;
 import com.igorloborec.scad.data.WebScraperProvider.WebScraperProvider;
 
+import java.util.Calendar;
+
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -224,6 +226,8 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        private static CalendarFragment mCalendarFragment;
+
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -249,7 +253,7 @@ public class MainActivity extends ActionBarActivity
 
             if (section == getResources().getInteger(R.integer.drawer_index_calendar)) {
                 rootView = inflater.inflate(R.layout.fragment_calendar, container, false);
-                CalendarFragment.setUp(rootView, scadProvider);
+                mCalendarFragment = new CalendarFragment(rootView, scadProvider, null);
             }
             else if (section == getResources().getInteger(R.integer.drawer_index_settings)) {
                 rootView = inflater.inflate(R.layout.fragment_settings, container, false);
