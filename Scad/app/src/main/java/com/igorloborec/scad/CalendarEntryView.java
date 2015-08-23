@@ -61,6 +61,9 @@ public class CalendarEntryView extends RelativeLayout {
             case PLANNED_NOT_HELD:
                 calendar_entry_text.setBackgroundColor(getResources().getInteger(R.integer.CalendarEntry_BgColor_PLANNED_NOT_HELD));
                 break;
+            case FOR_ALL:
+                calendar_entry_text.setBackgroundColor(getResources().getInteger(R.integer.CalendarEntry_BgColor_FOR_ALL));
+                break;
             case OTHER:
             default:
                 calendar_entry_text.setBackgroundColor(getResources().getInteger(R.integer.CalendarEntry_BgColor_OTHER));

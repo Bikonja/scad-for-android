@@ -30,7 +30,7 @@ public class CalendarFragment {
         GregorianCalendar calendar = new GregorianCalendar();
 
         // HACK: For testing
-        //calendar.set(2015, Calendar.MAY, 11);
+        //calendar.set(2015, Calendar.JUNE, 17);
 
         GregorianCalendar firstDayOfWeek = (GregorianCalendar)calendar.clone();
         firstDayOfWeek.add(Calendar.DATE, -1);

@@ -8,4 +8,5 @@
     <integer name="CalendarEntry_BgColor_OTHER">0x99F3A9E2</integer>
     <integer name="CalendarEntry_BgColor_PASSED_IN_PREVIOUS_ENTRY">0x991EF3DC</integer>
     <integer name="CalendarEntry_BgColor_OTHER_GROUPS_ENTRY">0x99C1E7DB</integer>
+    <integer name="CalendarEntry_BgColor_FOR_ALL">0x99DCD8BD</integer>
 </resources>

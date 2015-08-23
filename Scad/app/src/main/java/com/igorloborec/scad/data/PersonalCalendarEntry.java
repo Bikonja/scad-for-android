@@ -123,6 +123,7 @@ public class PersonalCalendarEntry {
         NOT_HELD,
         OTHER,
         PASSED_IN_PREVIOUS_ENTRY,
-        OTHER_GROUPS_ENTRY
+        OTHER_GROUPS_ENTRY,
+        FOR_ALL
     }
 }

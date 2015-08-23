@@ -107,6 +107,8 @@ public class PersonalCalendarParser {
                 type = PersonalCalendarEntry.Type.PASSED_IN_PREVIOUS_ENTRY;
             } else if (triggerBox.hasClass("act-languida")) {
                 type = PersonalCalendarEntry.Type.OTHER_GROUPS_ENTRY;
+            } else if (triggerBox.hasClass("act-platinum")) {
+                type = PersonalCalendarEntry.Type.FOR_ALL;
             }
         }
 
