@@ -3,10 +3,15 @@ package com.igorloborec.scad;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -22,40 +27,28 @@ import java.util.GregorianCalendar;
 /**
  * Created by Bikonja on 19.8.2015..
  */
-public class CalendarFragment {
+public class CalendarFragment extends Fragment {
+
+    public MainActivity getmActivity() {
+        return mActivity;
+    }
+
+    public void setmActivity(MainActivity mActivity) {
+        this.mActivity = mActivity;
+    }
+
+    protected MainActivity mActivity;
 
     protected View mRootView;
     protected View mProgressView;
-    protected GregorianCalendar mCalendar = new GregorianCalendar();
-    protected IScadProvider mScadProvider;
-
     protected LinearLayout calendar_layout;
     protected TextView calendar_date_label;
     protected ListView calendar_item_list;
 
-    public CalendarFragment(final View rootView, IScadProvider scadProvider, GregorianCalendar gregorianCalendar) {
-        mRootView = rootView;
-        mScadProvider = scadProvider;
-        mCalendar = gregorianCalendar != null ? gregorianCalendar : new GregorianCalendar();
+    protected GregorianCalendar mCalendar;
 
-        getControls();
+    public CalendarFragment() {
 
-        // HACK: For testing
-        //mCalendar.set(2015, Calendar.JUNE, 17);
-
-        changeDate(mCalendar);
-
-        calendar_date_label.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        changeDate(new GregorianCalendar(year, monthOfYear, dayOfMonth));
-                    }
-                }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DATE)).show();
-            }
-        });
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -64,7 +57,7 @@ public class CalendarFragment {
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = mRootView.getResources().getInteger(android.R.integer.config_shortAnimTime);
+            int shortAnimTime = mActivity.getResources().getInteger(android.R.integer.config_shortAnimTime);
 
             calendar_layout.setVisibility(show ? View.GONE : View.VISIBLE);
             calendar_layout.animate().setDuration(shortAnimTime).alpha(
@@ -91,16 +84,54 @@ public class CalendarFragment {
         }
     }
 
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_calendar, container, false);
+        Bundle args = getArguments();
+        if (args == null) {
+            args = new Bundle();
+        }
+
+        setUp(rootView, args);
+        return rootView;
+    }
+
     protected void getControls() {
         mProgressView = mRootView.findViewById(R.id.progress_bar);
         calendar_layout = ((LinearLayout)mRootView.findViewById(R.id.calendar_layout));
-        calendar_date_label = ((TextView) mRootView.findViewById(R.id.calendar_date_label));
-        calendar_item_list = ((ListView) mRootView.findViewById(R.id.calendar_item_list));
+        calendar_date_label = ((TextView)mRootView.findViewById(R.id.calendar_date_label));
+        calendar_item_list = ((ListView)mRootView.findViewById(R.id.calendar_item_list));
     }
 
-    public void changeDate(GregorianCalendar calendar) {
-        mCalendar = calendar;
+    public void setUp(View rootView, Bundle args) {
+        mActivity = (MainActivity)getActivity();
+        mRootView = rootView;
 
+        getControls();
+        calendar_date_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        mActivity.getmWorkingDate().set(year, monthOfYear, dayOfMonth);
+                        mActivity.getmCalendarFragmentCollectionPagerAdapter().notifyDataSetChanged();
+                        mActivity.getmCalendarViewPager().setCurrentItem(CalendarFragmentCollectionPagerAdapter.FIRST_ITEM);
+                        changeDate(new GregorianCalendar(year, monthOfYear, dayOfMonth));
+                    }
+                }, mActivity.getmWorkingDate().get(Calendar.YEAR), mActivity.getmWorkingDate().get(Calendar.MONTH), mActivity.getmWorkingDate().get(Calendar.DATE)).show();
+            }
+        });
+
+        Integer add = args.getInt("ADD");
+        mCalendar = (GregorianCalendar)mActivity.getmWorkingDate().clone();
+        mCalendar.add(Calendar.DATE, add);
+
+        changeDate(mCalendar);
+    }
+
+    public void changeDate(final GregorianCalendar calendar) {
+        mCalendar = (GregorianCalendar)calendar.clone();
         new ChangeDateAsyncTask().execute();
     }
 
@@ -113,7 +144,7 @@ public class CalendarFragment {
 
         @Override
         protected PersonalCalendar doInBackground(Void... params) {
-            return mScadProvider.GetPersonalCalendar(mCalendar);
+            return mActivity.getmScadProvider().GetPersonalCalendar(mCalendar);
         }
 
         @Override
@@ -126,9 +157,10 @@ public class CalendarFragment {
             GregorianCalendar lastDayOfWeek = (GregorianCalendar)firstDayOfWeek.clone();
             lastDayOfWeek.add(Calendar.DATE, 6);
 
-            calendar_date_label.setText(String.format("%tY-%<tm-%<td  -  %tY-%<tm-%<td", firstDayOfWeek, lastDayOfWeek));
+            //calendar_date_label.setText(String.format("%tY-%<tm-%<td  -  %tY-%<tm-%<td", firstDayOfWeek, lastDayOfWeek));
+            calendar_date_label.setText(String.format("%tY-%<tm-%<td", mCalendar));
 
-            CalendarEntryAdapter adapter = new CalendarEntryAdapter(mRootView.getContext(), personalCalendar.get_entries());
+            CalendarEntryAdapter adapter = new CalendarEntryAdapter(mActivity, personalCalendar.get_entries());
             calendar_item_list.setAdapter(adapter);
 
             showProgress(false);

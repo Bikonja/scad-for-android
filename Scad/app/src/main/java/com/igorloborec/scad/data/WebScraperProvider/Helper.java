@@ -28,14 +28,14 @@ import java.util.concurrent.ExecutionException;
  * Created by Bikonja on 5.3.2015..
  */
 public class Helper {
-    public static String GetHtmlForUrl(String url, final MainActivity mainActivity) throws MalformedURLException {
+    public static String GetHtmlForUrl(String url, String authToken) throws MalformedURLException {
         String html = null;
 
         final DefaultHttpClient httpClient = new DefaultHttpClient();
         final HttpGet httpGet = new HttpGet(url);
 
         BasicClientCookie authCookie;
-        List<HttpCookie> cookies = HttpCookie.parse(mainActivity.getmAccountToken());
+        List<HttpCookie> cookies = HttpCookie.parse(authToken);
 
         if (cookies != null && !cookies.isEmpty()) {
             HttpCookie cookie = cookies.get(0);

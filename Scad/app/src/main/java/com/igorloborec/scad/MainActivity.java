@@ -9,6 +9,8 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -21,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.view.ViewPropertyAnimator;
 import android.widget.Button;
 
 import com.igorloborec.scad.authentication.AccountGeneral;
@@ -28,6 +31,7 @@ import com.igorloborec.scad.data.IScadProvider;
 import com.igorloborec.scad.data.WebScraperProvider.WebScraperProvider;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -48,13 +52,59 @@ public class MainActivity extends ActionBarActivity
     private Account mAccount;
     private String mAccountToken = null;
     private String mPortalUrl;
+    private IScadProvider mScadProvider = null;
+    private GregorianCalendar mWorkingDate = new GregorianCalendar();
+    private CalendarFragmentCollectionPagerAdapter mCalendarFragmentCollectionPagerAdapter;
+    private ViewPager mCalendarViewPager;
 
     public String getmAccountToken() {
         return mAccountToken;
     }
 
+    public void setmAccountToken(String accountToken) {
+        mAccountToken = accountToken;
+        mScadProvider = null;
+    }
+
     public String getmPortalUrl() {
         return mPortalUrl;
+    }
+
+    public void setmPortalUrl(String portalUrl) {
+        mPortalUrl = portalUrl;
+        mScadProvider = null;
+    }
+
+    public IScadProvider getmScadProvider() {
+        if (mScadProvider == null) {
+            mScadProvider = new WebScraperProvider(getmAccountToken(), getmPortalUrl());
+        }
+
+        return mScadProvider;
+    }
+
+    public GregorianCalendar getmWorkingDate() {
+        return mWorkingDate;
+    }
+
+    public void setmWorkingDate(GregorianCalendar gregorianCalendar) {
+        mWorkingDate = gregorianCalendar;
+    }
+
+    public CalendarFragmentCollectionPagerAdapter getmCalendarFragmentCollectionPagerAdapter() {
+        return mCalendarFragmentCollectionPagerAdapter;
+    }
+
+    public void setmCalendarFragmentCollectionPagerAdapter(CalendarFragmentCollectionPagerAdapter adapter) {
+        mCalendarFragmentCollectionPagerAdapter = adapter;
+    }
+
+    public ViewPager getmCalendarViewPager() {
+        return mCalendarViewPager;
+    }
+
+    public void setmCalendarViewPager(ViewPager viewPager) {
+        mCalendarViewPager = viewPager;
     }
 
     @Override
@@ -71,7 +121,7 @@ public class MainActivity extends ActionBarActivity
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (mAccountToken != null && !mAccountToken.isEmpty()) {
+                if (getmAccountToken() != null && !getmAccountToken().isEmpty()) {
                     activity.setContentView(R.layout.activity_main);
 
                     mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -112,8 +162,8 @@ public class MainActivity extends ActionBarActivity
                     try {
                         Bundle bnd = future.getResult();
 
-                        mAccountToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
-                        mPortalUrl = mAccountManager.getUserData(mAccount, AccountGeneral.PORTAL_ADDRESS);
+                        setmAccountToken(bnd.getString(AccountManager.KEY_AUTHTOKEN));
+                        setmPortalUrl(mAccountManager.getUserData(mAccount, AccountGeneral.PORTAL_ADDRESS));
 
                         setupView(activity);
                     } catch (Exception e) {
@@ -226,8 +276,6 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        private static CalendarFragment mCalendarFragment;
-
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -247,13 +295,24 @@ public class MainActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             int section = getArguments().getInt(ARG_SECTION_NUMBER);
-            IScadProvider scadProvider = new WebScraperProvider((MainActivity)getActivity());
 
             View rootView = null;
 
             if (section == getResources().getInteger(R.integer.drawer_index_calendar)) {
-                rootView = inflater.inflate(R.layout.fragment_calendar, container, false);
-                mCalendarFragment = new CalendarFragment(rootView, scadProvider, null);
+                rootView = inflater.inflate(R.layout.calendar_pager, container, false);
+
+                // HACK: For testing
+                //((MainActivity)getActivity()).getmWorkingDate().set(2015, Calendar.JUNE, 17);
+
+                ((MainActivity)getActivity()).setmCalendarFragmentCollectionPagerAdapter(
+                        new CalendarFragmentCollectionPagerAdapter(
+                                getActivity().getSupportFragmentManager()));
+
+                final ViewPager viewPager = (ViewPager)rootView;
+                ((MainActivity)getActivity()).setmCalendarViewPager(viewPager);
+                viewPager.setAdapter(((MainActivity)getActivity()).getmCalendarFragmentCollectionPagerAdapter());
+                viewPager.setOffscreenPageLimit(2);
+                viewPager.setCurrentItem(CalendarFragmentCollectionPagerAdapter.FIRST_ITEM);
             }
             else if (section == getResources().getInteger(R.integer.drawer_index_settings)) {
                 rootView = inflater.inflate(R.layout.fragment_settings, container, false);
