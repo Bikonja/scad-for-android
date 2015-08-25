@@ -161,6 +161,7 @@ public class CalendarFragment extends Fragment {
             calendar_date_label.setText(String.format("%tY-%<tm-%<td", mCalendar));
 
             CalendarEntryAdapter adapter = new CalendarEntryAdapter(mActivity, personalCalendar.get_entries(mCalendar));
+            calendar_item_list.setEmptyView(mRootView.findViewById(R.id.calendar_empy));
             calendar_item_list.setAdapter(adapter);
 
             showProgress(false);

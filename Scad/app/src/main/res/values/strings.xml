@@ -29,4 +29,6 @@
     <string name="not_logged_in">Niste prijavljeni</string>
     <string name="error_unknown">Došlo je do greške</string>
 
+    <string name="calendar_empty">Uživaj u slobodnom vremenu jer ti je raspored za ovaj dan prazan :)</string>
+
 </resources>
