@@ -5,6 +5,7 @@
 package com.igorloborec.scad.data;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class PersonalCalendarEntry {
     // some possible boxes:
@@ -16,6 +17,7 @@ public class PersonalCalendarEntry {
     // - teal (example: https://student.vsite.hr/?q=student/calendar/2015-02-19)
 
     protected Type _type;
+    protected GregorianCalendar _date;
     protected Date _start;
     protected Date _end;
     protected String _duration;
@@ -26,6 +28,10 @@ public class PersonalCalendarEntry {
     protected String _location;
     protected String _subjectHolder;
     protected String _status;
+
+    public GregorianCalendar get_date() { return _date; }
+
+    public void set_date(GregorianCalendar _date) { this._date = _date; }
 
     public Type get_type() {
         return _type;

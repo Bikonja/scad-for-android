@@ -10,7 +10,9 @@ import org.jsoup.select.Elements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,9 +22,10 @@ import java.util.regex.Pattern;
 public class PersonalCalendarParser {
     final static String DATE_FORMAT = "dd.MM.yyyy. HH:mm";
     final static SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+    final static Pattern datePattern = Pattern.compile("([0-9]{2})\\.([0-9]{2})\\.([0-9]{4})\\.");
 
     public static PersonalCalendar Parse(String html) {
-        PersonalCalendar personalCalendar = new PersonalCalendar();
+        ArrayList<PersonalCalendarEntry> personalCalendarEntries = new ArrayList<>();
 
         // TODO: Sanity checks, logs, ...
         Document document = Jsoup.parse(html);
@@ -43,7 +46,9 @@ public class PersonalCalendarParser {
             String subjectType = triggerBoxEntries.length > triggerBoxIndex + 1 ? triggerBoxEntries[triggerBoxIndex + 1].trim() : "";
             String subjectGroup = triggerBoxEntries.length > triggerBoxIndex + 2 ? triggerBoxEntries[triggerBoxIndex + 2].trim() : "";
 
-            String[] popupLines = Helper.GetNodeTextWithNewLines(popupBox).split("\\r?\\n");
+            String popupText = Helper.GetNodeTextWithNewLines(popupBox);
+            String[] popupLines = popupText.split("\\r?\\n");
+            GregorianCalendar date = GetEntryDateFromDiv(popupText);
             Elements subjectLinks = popupBox.select("a");
             String subjectUrl = subjectLinks != null && !subjectLinks.isEmpty() ? subjectLinks.get(0).attr("href") : "";
             String subjectLocation = popupLines[1].trim();
@@ -69,6 +74,7 @@ public class PersonalCalendarParser {
             String subjectStatus = popupLines[popupLines.length - 1].trim();
 
             entry.set_type(entryType);
+            entry.set_date(date);
             entry.set_subjectAbbr(subjectAbbr);
             entry.set_subjectType(subjectType);
             entry.set_subjectGroup(subjectGroup);
@@ -81,10 +87,10 @@ public class PersonalCalendarParser {
             entry.set_subjectHolder(subjectHolder);
             entry.set_status(subjectStatus);
 
-            personalCalendar.get_entries().add(entry);
+            personalCalendarEntries.add(entry);
         }
 
-        return personalCalendar;
+        return new PersonalCalendar(personalCalendarEntries);
     }
 
     private static PersonalCalendarEntry.Type GetEntryTypeFromDiv(Element triggerBox) {
@@ -113,5 +119,21 @@ public class PersonalCalendarParser {
         }
 
         return type;
+    }
+
+    private static GregorianCalendar GetEntryDateFromDiv(String popupText) {
+        GregorianCalendar date = new GregorianCalendar();
+        Matcher matcher = datePattern.matcher(popupText);
+
+        if (matcher.find())
+        {
+            date.set(Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(2)) - 1, Integer.parseInt(matcher.group(1)));
+        }
+        else
+        {
+            date = null;
+        }
+
+        return date;
     }
 }
