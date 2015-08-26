@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 /**
  * Created by Bikonja on 28.6.2015..
@@ -19,6 +20,7 @@ import java.util.GregorianCalendar;
 public class WebScraperProvider implements IScadProvider {
     protected String mAuthToken;
     protected String mPortalUrl;
+    protected HashMap<GregorianCalendar, PersonalCalendar> mPersonalCalendars = new HashMap<>();
 
     public String getmAuthToken() {
         return mAuthToken;
@@ -43,15 +45,31 @@ public class WebScraperProvider implements IScadProvider {
 
     @Override
     public PersonalCalendar GetPersonalCalendar(GregorianCalendar calendar) {
-        String url = String.format("%s/?q=student/calendar/%tY-%<tm-%<td", getmPortalUrl(), calendar);
-        String html = null;
-        try {
-            html = Helper.GetHtmlForUrl(url, getmAuthToken());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        GregorianCalendar firstDayOfWeek = (GregorianCalendar)calendar.clone();
+        firstDayOfWeek.add(Calendar.DATE, -1);
+        firstDayOfWeek.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        firstDayOfWeek.add(Calendar.DATE, 1);
+        firstDayOfWeek.set(Calendar.HOUR_OF_DAY, 0);
+        firstDayOfWeek.set(Calendar.MINUTE, 0);
+        firstDayOfWeek.set(Calendar.MILLISECOND, 0);
+
+        PersonalCalendar personalCalendar = mPersonalCalendars.get(firstDayOfWeek);
+        if (personalCalendar == null) {
+            String url = String.format("%s/?q=student/calendar/%tY-%<tm-%<td", getmPortalUrl(), calendar);
+            try {
+                String html = Helper.GetHtmlForUrl(url, getmAuthToken());
+                personalCalendar = PersonalCalendarParser.Parse(html);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                personalCalendar = null;
+            }
+
+            if (personalCalendar != null) {
+                mPersonalCalendars.put(firstDayOfWeek, personalCalendar);
+            }
         }
 
-        return PersonalCalendarParser.Parse(html);
+        return personalCalendar;
     }
 
     @Override
