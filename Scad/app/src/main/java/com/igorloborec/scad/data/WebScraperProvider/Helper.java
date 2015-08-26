@@ -5,10 +5,14 @@
 package com.igorloborec.scad.data.WebScraperProvider;
 
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.igorloborec.scad.MainActivity;
+import com.igorloborec.scad.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -90,5 +94,12 @@ public class Helper {
         }
 
         return text;
+    }
+
+    public static class Preferences {
+        public static String GetDateFormatString(Activity activity) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+            return preferences.getString(activity.getResources().getString(R.string.PREFERENCE_CALENDAR_DATE_FORMAT), activity.getResources().getStringArray(R.array.Calendar_date_format_strings)[0]);
+        }
     }
 }

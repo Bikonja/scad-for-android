@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="PREFERENCE_CALENDAR_DATE_FORMAT">calendar_date_format</string>
+    <string name="PREFERENCE_CALENDAR_DATE_FORMAT_title">Format datuma</string>
+    <string name="PREFERENCE_CALENDAR_DATE_FORMAT_summary">Odaberite način prikaza datuma</string>
+
+    <string-array name="Calendar_date_formats">
+        <item>31.12.2015. (Wednesday)</item>
+        <item>Wed - 31.12.2015.</item>
+        <item>31.12.2015.</item>
+
+        <item>12/31/2015 (Wednesday)</item>
+        <item>Wed - 12/31/2015</item>
+        <item>12/31/2015</item>
+
+        <item>2015-12-31 (Wednesday)</item>
+        <item>Wed - 2015-12-31</item>
+        <item>2015-12-31</item>
+    </string-array>
+
+    <string-array name="Calendar_date_format_strings">
+        <item>%1$td.%1$tm.%1$tY. (%1$tA)</item>
+        <item>%1$ta - %1$td.%1$tm.%1$tY.</item>
+        <item>%1$td.%1$tm.%1$tY.</item>
+
+        <item>%1$tm/%1$td/%1$tY (%1$tA)</item>
+        <item>%1$ta - %1$tm/%1$td/%1$tY</item>
+        <item>%1$tm/%1$td/%1$tY</item>
+
+        <item>%1$tY-%1$tm-%1$td (%1$tA)</item>
+        <item>%1$ta - %1$tY-%1$tm-%1$td</item>
+        <item>%1$tY-%1$tm-%1$td</item>
+    </string-array>
+</resources>

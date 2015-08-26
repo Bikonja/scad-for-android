@@ -9,7 +9,8 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -23,14 +24,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.view.ViewPropertyAnimator;
 import android.widget.Button;
 
 import com.igorloborec.scad.authentication.AccountGeneral;
 import com.igorloborec.scad.data.IScadProvider;
 import com.igorloborec.scad.data.WebScraperProvider.WebScraperProvider;
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class MainActivity extends ActionBarActivity
@@ -56,6 +55,7 @@ public class MainActivity extends ActionBarActivity
     private GregorianCalendar mWorkingDate = new GregorianCalendar();
     private CalendarFragmentCollectionPagerAdapter mCalendarFragmentCollectionPagerAdapter;
     private ViewPager mCalendarViewPager;
+    private int mDrawerPosition;
 
     public String getmAccountToken() {
         return mAccountToken;
@@ -199,6 +199,10 @@ public class MainActivity extends ActionBarActivity
         mAccountManager.invalidateAuthToken(AccountGeneral.ACCOUNT_TYPE, mAccountToken);
     }
 
+    public void refreshDrawerContent() {
+        onNavigationDrawerItemSelected(mDrawerPosition);
+    }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         int normalizedPosition = position + 1;
@@ -206,13 +210,16 @@ public class MainActivity extends ActionBarActivity
         if (normalizedPosition == getResources().getInteger(R.integer.drawer_index_logout)) {
             logoutAccount();
             finish();
-        }
-            else {
+        } else {
             // update the main content by replacing fragments
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.container, PlaceholderFragment.newInstance(normalizedPosition))
                     .commitAllowingStateLoss();
+        }
+
+        if (normalizedPosition != getResources().getInteger(R.integer.drawer_index_settings)) {
+            mDrawerPosition = position;
         }
     }
 
@@ -266,6 +273,15 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PlaceholderFragment.SETTINGS_RESULT) {
+            refreshDrawerContent();
+        }
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -275,6 +291,11 @@ public class MainActivity extends ActionBarActivity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * The request code of settings activity
+         */
+        public static final int SETTINGS_RESULT = 1;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -315,7 +336,9 @@ public class MainActivity extends ActionBarActivity
                 viewPager.setCurrentItem(CalendarFragmentCollectionPagerAdapter.FIRST_ITEM);
             }
             else if (section == getResources().getInteger(R.integer.drawer_index_settings)) {
-                rootView = inflater.inflate(R.layout.fragment_settings, container, false);
+                //rootView = inflater.inflate(R.layout.fragment_settings, container, false);
+                Intent i = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
+                getActivity().startActivityForResult(i, SETTINGS_RESULT);
             }
             else if (section == getResources().getInteger(R.integer.drawer_index_logout)) {
                 rootView = inflater.inflate(R.layout.fragment_main, container, false);

@@ -8,6 +8,7 @@ import android.app.DatePickerDialog;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.igorloborec.scad.data.IScadProvider;
 import com.igorloborec.scad.data.PersonalCalendar;
+import com.igorloborec.scad.data.WebScraperProvider.Helper;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -149,7 +151,7 @@ public class CalendarFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PersonalCalendar personalCalendar) {
-            GregorianCalendar firstDayOfWeek = (GregorianCalendar)mCalendar.clone();
+            /*GregorianCalendar firstDayOfWeek = (GregorianCalendar)mCalendar.clone();
             firstDayOfWeek.add(Calendar.DATE, -1);
             firstDayOfWeek.set(Calendar.DAY_OF_WEEK, mCalendar.getFirstDayOfWeek());
             firstDayOfWeek.add(Calendar.DATE, 1);
@@ -157,8 +159,8 @@ public class CalendarFragment extends Fragment {
             GregorianCalendar lastDayOfWeek = (GregorianCalendar)firstDayOfWeek.clone();
             lastDayOfWeek.add(Calendar.DATE, 6);
 
-            //calendar_date_label.setText(String.format("%tY-%<tm-%<td  -  %tY-%<tm-%<td", firstDayOfWeek, lastDayOfWeek));
-            calendar_date_label.setText(String.format("%tY-%<tm-%<td", mCalendar));
+            //calendar_date_label.setText(String.format("%tY-%<tm-%<td  -  %tY-%<tm-%<td", firstDayOfWeek, lastDayOfWeek));*/
+            calendar_date_label.setText(String.format(Helper.Preferences.GetDateFormatString(mActivity), mCalendar));
 
             CalendarEntryAdapter adapter = new CalendarEntryAdapter(mActivity, personalCalendar.get_entries(mCalendar));
             calendar_item_list.setEmptyView(mRootView.findViewById(R.id.calendar_empy));

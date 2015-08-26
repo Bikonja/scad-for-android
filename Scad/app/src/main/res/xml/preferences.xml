@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/calendar_preferencecategory_title">
+        <ListPreference
+            android:key="@string/PREFERENCE_CALENDAR_DATE_FORMAT"
+            android:title="@string/PREFERENCE_CALENDAR_DATE_FORMAT_title"
+            android:summary="@string/PREFERENCE_CALENDAR_DATE_FORMAT_summary"
+            android:entries="@array/Calendar_date_formats"
+            android:entryValues="@array/Calendar_date_format_strings" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
