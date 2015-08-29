@@ -3,7 +3,8 @@ scad-for-android
 
 A native Android app for SCAD (SChool ADministration) system made by Vsite.
 
-*NOTICE:* Since SCAD doesn't expose any API, this app relies on mimicking a web user. This has two sideeffects you should really know about.
+**NOTICE:** Since SCAD doesn't expose any API, this app relies on mimicking a web user. This has two side-effects you should really know about.
+
 1. When you do any action using this app, the SCAD system will think you are logged in using the web interface
 2. Any change, even if it's not even noticeable in the web interface *may* break the functionality of this app. While these types of changes haven't been that frequent in the past, I can not guarantee if and when a change like this happens and how it will affect this app.
 
