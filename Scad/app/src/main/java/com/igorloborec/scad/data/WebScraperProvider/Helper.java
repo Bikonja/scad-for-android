@@ -7,11 +7,10 @@ package com.igorloborec.scad.data.WebScraperProvider;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.igorloborec.scad.MainActivity;
+import com.igorloborec.scad.AccessDeniedException;
 import com.igorloborec.scad.R;
 
 import org.apache.http.HttpResponse;
@@ -26,13 +25,12 @@ import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Bikonja on 5.3.2015..
  */
 public class Helper {
-    public static String GetHtmlForUrl(String url, String authToken) throws MalformedURLException {
+    public static String GetHtmlForUrl(String url, String authToken) throws MalformedURLException, AccessDeniedException {
         String html = null;
 
         final DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -48,29 +46,17 @@ public class Helper {
             authCookie.setPath(cookie.getPath());
             httpClient.getCookieStore().addCookie(authCookie);
 
-            /*try {
-                html = new AsyncTask<Void, Void, String>(){
-                    @Override
-                    protected String doInBackground(Void... params) {
-                        String html = null;*/
-
-                        try {
-                            HttpResponse response = httpClient.execute(httpGet);
-                            if (response.getStatusLine().getStatusCode() != 403) {
-                                html = EntityUtils.toString(response.getEntity());
-                            } else {
-                                Log.d("SCAD", "Access denied");
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        return html;
-                    /*}
-                }.execute().get();
-            } catch (InterruptedException | ExecutionException e) {
+            try {
+                HttpResponse response = httpClient.execute(httpGet);
+                if (response.getStatusLine().getStatusCode() != 403) {
+                    html = EntityUtils.toString(response.getEntity());
+                } else {
+                    Log.d("SCAD", "Access denied");
+                    throw new AccessDeniedException("Access denied for page " + url);
+                }
+            } catch (IOException e) {
                 e.printStackTrace();
-            }*/
+            }
         }
 
         return html;
@@ -103,3 +89,4 @@ public class Helper {
         }
     }
 }
+

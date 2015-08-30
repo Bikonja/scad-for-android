@@ -107,6 +107,35 @@ public class MainActivity extends ActionBarActivity
         mCalendarViewPager = viewPager;
     }
 
+    public void RefreshToken() {
+        final Account availableAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        if (availableAccounts.length == 0) {
+            addNewAccount(this);
+        } else {
+            mAccount = availableAccounts[0];
+
+            final AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(mAccount, AccountGeneral.AUTHTOKEN_TYPE_DEFAULT, null, this, null, null);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Bundle bnd = future.getResult();
+
+                        setmAccountToken(bnd.getString(AccountManager.KEY_AUTHTOKEN));
+                        setmPortalUrl(mAccountManager.getUserData(mAccount, AccountGeneral.PORTAL_ADDRESS));
+
+                        refreshDrawerContent();
+                    } catch (Exception e) {
+                        Log.d(LOG_TAG, "Get token failed: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,7 +175,7 @@ public class MainActivity extends ActionBarActivity
         });
     }
 
-    private void accountLoginOrCreate(final Activity activity) {
+    public void accountLoginOrCreate(final Activity activity) {
         final Account availableAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 
         if (availableAccounts.length == 0) {

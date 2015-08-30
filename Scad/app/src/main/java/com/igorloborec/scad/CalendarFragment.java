@@ -146,7 +146,17 @@ public class CalendarFragment extends Fragment {
 
         @Override
         protected PersonalCalendar doInBackground(Void... params) {
-            return mActivity.getmScadProvider().GetPersonalCalendar(mCalendar);
+            PersonalCalendar personalCalendar = null;
+
+            try {
+                personalCalendar = mActivity.getmScadProvider().GetPersonalCalendar(mCalendar);
+            } catch (AccessDeniedException e) {
+                e.printStackTrace();
+
+                mActivity.RefreshToken();
+            }
+
+            return personalCalendar;
         }
 
         @Override
@@ -160,11 +170,13 @@ public class CalendarFragment extends Fragment {
             lastDayOfWeek.add(Calendar.DATE, 6);
 
             //calendar_date_label.setText(String.format("%tY-%<tm-%<td  -  %tY-%<tm-%<td", firstDayOfWeek, lastDayOfWeek));*/
-            calendar_date_label.setText(String.format(Helper.Preferences.GetDateFormatString(mActivity), mCalendar));
+            if (personalCalendar != null) {
+                calendar_date_label.setText(String.format(Helper.Preferences.GetDateFormatString(mActivity), mCalendar));
 
-            CalendarEntryAdapter adapter = new CalendarEntryAdapter(mActivity, personalCalendar.get_entries(mCalendar));
-            calendar_item_list.setEmptyView(mRootView.findViewById(R.id.calendar_empy));
-            calendar_item_list.setAdapter(adapter);
+                CalendarEntryAdapter adapter = new CalendarEntryAdapter(mActivity, personalCalendar.get_entries(mCalendar));
+                calendar_item_list.setEmptyView(mRootView.findViewById(R.id.calendar_empy));
+                calendar_item_list.setAdapter(adapter);
+            }
 
             showProgress(false);
         }

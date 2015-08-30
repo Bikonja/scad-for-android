@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.igorloborec.scad.AccessDeniedException;
 import com.igorloborec.scad.MainActivity;
 import com.igorloborec.scad.data.IScadProvider;
 import com.igorloborec.scad.data.PersonalCalendar;
@@ -22,13 +23,9 @@ public class WebScraperProvider implements IScadProvider {
     protected String mPortalUrl;
     protected HashMap<GregorianCalendar, PersonalCalendar> mPersonalCalendars = new HashMap<>();
 
-    public String getmAuthToken() {
-        return mAuthToken;
-    }
+    public String getmAuthToken() { return mAuthToken; }
 
-    public void setmAuthToken(String mAuthToken) {
-        this.mAuthToken = mAuthToken;
-    }
+    public void setmAuthToken(String mAuthToken) { this.mAuthToken = mAuthToken; }
 
     public String getmPortalUrl() {
         return mPortalUrl;
@@ -44,7 +41,7 @@ public class WebScraperProvider implements IScadProvider {
     }
 
     @Override
-    public PersonalCalendar GetPersonalCalendar(GregorianCalendar calendar) {
+    public PersonalCalendar GetPersonalCalendar(GregorianCalendar calendar) throws AccessDeniedException {
         GregorianCalendar firstDayOfWeek = (GregorianCalendar)calendar.clone();
         firstDayOfWeek.add(Calendar.DATE, -1);
         firstDayOfWeek.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());

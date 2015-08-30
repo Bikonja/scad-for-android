@@ -56,35 +56,6 @@ public class HtmlParseScadAuthenticate implements ScadAuthenticate {
 
         String authtoken = null;
 
-
-
-        /*
-        URL url = new URL(portalUrl + "/?q=inlo&destination=inlo");
-        HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-        urlConnection.setDoOutput(true);
-        urlConnection.setRequestMethod("POST");
-
-        String data = "name=" + URLEncoder.encode(user, "UTF-8") +
-                "&pass=" + URLEncoder.encode(pass, "UTF-8") +
-                "&op=Log+in&form_id=user_login_block";
-
-        OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
-        writer.write(data);
-        writer.flush();
-        String line;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-        while ((line = reader.readLine()) != null) {
-            System.out.println(line);
-        }
-        writer.close();
-        reader.close();
-
-        urlConnection.disconnect();
-        authtoken = urlConnection.getHeaderField("Set-Cookie");
-
-*/
-
-
         DefaultHttpClient httpClient = new DefaultHttpClient();
         String url = portalUrl + "/?q=inlo&destination=inlo";
 
@@ -93,16 +64,13 @@ public class HtmlParseScadAuthenticate implements ScadAuthenticate {
 
         HttpPost httpPost = new HttpPost(url);
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>(4);
+        List<NameValuePair> params = new ArrayList<>(4);
         params.add(new BasicNameValuePair("name", user));
         params.add(new BasicNameValuePair("pass", pass));
         params.add(new BasicNameValuePair("op", "Log+in"));
         params.add(new BasicNameValuePair("form_id", "user_login_block"));
         UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
         httpPost.setEntity(formEntity);
-
-        //httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        //httpPost.addHeader("Content-Length", "" + formEntity.getContentLength());
 
         try {
             HttpResponse response = httpClient.execute(httpPost);
