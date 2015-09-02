@@ -134,6 +134,7 @@ public class CalendarFragment extends Fragment {
 
     public void changeDate(final GregorianCalendar calendar) {
         mCalendar = (GregorianCalendar)calendar.clone();
+        calendar_date_label.setText(String.format(Helper.Preferences.GetDateFormatString(mActivity), mCalendar));
         new ChangeDateAsyncTask().execute();
     }
 
