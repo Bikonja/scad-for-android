@@ -40,8 +40,7 @@ public class WebScraperProvider implements IScadProvider {
         mPortalUrl = portalUrl;
     }
 
-    @Override
-    public PersonalCalendar GetPersonalCalendar(GregorianCalendar calendar) throws AccessDeniedException {
+    public PersonalCalendar GetPersonalCalendar(GregorianCalendar calendar, boolean forceRefreshCache) throws AccessDeniedException {
         GregorianCalendar firstDayOfWeek = (GregorianCalendar)calendar.clone();
         firstDayOfWeek.add(Calendar.DATE, -1);
         firstDayOfWeek.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
@@ -51,6 +50,12 @@ public class WebScraperProvider implements IScadProvider {
         firstDayOfWeek.set(Calendar.MILLISECOND, 0);
 
         PersonalCalendar personalCalendar = mPersonalCalendars.get(firstDayOfWeek);
+
+        if (personalCalendar != null && forceRefreshCache) {
+            mPersonalCalendars.remove(personalCalendar);
+            personalCalendar = null;
+        }
+
         if (personalCalendar == null) {
             String url = String.format("%s/?q=student/calendar/%tY-%<tm-%<td", getmPortalUrl(), calendar);
             try {

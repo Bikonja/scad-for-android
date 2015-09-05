@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.igorloborec.scad.data.IScadProvider;
@@ -43,9 +45,11 @@ public class CalendarFragment extends Fragment {
 
     protected View mRootView;
     protected View mProgressView;
-    protected LinearLayout calendar_layout;
+    protected SwipeRefreshLayout swipeRefreshLayout;
+    protected RelativeLayout calendar_layout;
     protected TextView calendar_date_label;
     protected ListView calendar_item_list;
+    protected LinearLayout calendar_empy;
 
     protected GregorianCalendar mCalendar;
 
@@ -55,34 +59,46 @@ public class CalendarFragment extends Fragment {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = mActivity.getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            calendar_layout.setVisibility(show ? View.GONE : View.VISIBLE);
-            calendar_layout.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    calendar_layout.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(show);
         } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            calendar_layout.setVisibility(show ? View.GONE : View.VISIBLE);
+            // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+            // for very easy animations. If available, use these APIs to fade-in
+            // the progress spinner.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                int shortAnimTime = mActivity.getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+                calendar_layout.setVisibility(show ? View.GONE : View.VISIBLE);
+                calendar_layout.animate().setDuration(shortAnimTime).alpha(
+                        show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        calendar_layout.setVisibility(show ? View.GONE : View.VISIBLE);
+                    }
+                });
+
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                mProgressView.animate().setDuration(shortAnimTime).alpha(
+                        show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                });
+            } else {
+                // The ViewPropertyAnimator APIs are not available, so simply show
+                // and hide the relevant UI components.
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                calendar_layout.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        }
+
+        if (!show) {
+            if (calendar_item_list.getAdapter().isEmpty()) {
+                calendar_empy.setVisibility(View.VISIBLE);
+            } else {
+                calendar_empy.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -100,9 +116,12 @@ public class CalendarFragment extends Fragment {
 
     protected void getControls() {
         mProgressView = mRootView.findViewById(R.id.progress_bar);
-        calendar_layout = ((LinearLayout)mRootView.findViewById(R.id.calendar_layout));
-        calendar_date_label = ((TextView)mRootView.findViewById(R.id.calendar_date_label));
-        calendar_item_list = ((ListView)mRootView.findViewById(R.id.calendar_item_list));
+        swipeRefreshLayout = (SwipeRefreshLayout)mRootView.findViewById(R.id.swiperefresh);
+        calendar_layout = (RelativeLayout)mRootView.findViewById(R.id.calendar_layout);
+        calendar_date_label = (TextView)mRootView.findViewById(R.id.calendar_date_label);
+        calendar_item_list = (ListView)mRootView.findViewById(R.id.calendar_item_list);
+        calendar_empy = (LinearLayout)mRootView.findViewById(R.id.calendar_empy);
+        //swiperefresh_empty = (SwipeRefreshLayout)mRootView.findViewById(R.id.swiperefresh_empty);
     }
 
     public void setUp(View rootView, Bundle args) {
@@ -125,6 +144,15 @@ public class CalendarFragment extends Fragment {
             }
         });
 
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        new ChangeDateAsyncTask(true).execute();
+                    }
+                }
+        );
+
         Integer add = args.getInt("ADD");
         mCalendar = (GregorianCalendar)mActivity.getmWorkingDate().clone();
         mCalendar.add(Calendar.DATE, add);
@@ -135,22 +163,26 @@ public class CalendarFragment extends Fragment {
     public void changeDate(final GregorianCalendar calendar) {
         mCalendar = (GregorianCalendar)calendar.clone();
         calendar_date_label.setText(String.format(Helper.Preferences.GetDateFormatString(mActivity), mCalendar));
-        new ChangeDateAsyncTask().execute();
+        new ChangeDateAsyncTask(swipeRefreshLayout.isRefreshing()).execute();
     }
 
     private class ChangeDateAsyncTask extends AsyncTask<Void, Void, PersonalCalendar> {
 
-        @Override
-        protected void onPreExecute() {
-            showProgress(true);
+        protected boolean _forceRefreshCache = false;
+
+        public ChangeDateAsyncTask(boolean forceRefreshCache) {
+            _forceRefreshCache = forceRefreshCache;
         }
+
+        @Override
+        protected void onPreExecute() { showProgress(true); }
 
         @Override
         protected PersonalCalendar doInBackground(Void... params) {
             PersonalCalendar personalCalendar = null;
 
             try {
-                personalCalendar = mActivity.getmScadProvider().GetPersonalCalendar(mCalendar);
+                personalCalendar = mActivity.getmScadProvider().GetPersonalCalendar(mCalendar, _forceRefreshCache);
             } catch (AccessDeniedException e) {
                 e.printStackTrace();
 
@@ -172,10 +204,8 @@ public class CalendarFragment extends Fragment {
 
             //calendar_date_label.setText(String.format("%tY-%<tm-%<td  -  %tY-%<tm-%<td", firstDayOfWeek, lastDayOfWeek));*/
             if (personalCalendar != null) {
-                calendar_date_label.setText(String.format(Helper.Preferences.GetDateFormatString(mActivity), mCalendar));
-
                 CalendarEntryAdapter adapter = new CalendarEntryAdapter(mActivity, personalCalendar.get_entries(mCalendar));
-                calendar_item_list.setEmptyView(mRootView.findViewById(R.id.calendar_empy));
+                //calendar_item_list.setEmptyView(calendar_empy);
                 calendar_item_list.setAdapter(adapter);
             }
 
