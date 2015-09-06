@@ -18,8 +18,8 @@ public class PersonalCalendarEntry {
 
     protected Type _type;
     protected GregorianCalendar _date;
-    protected Date _start;
-    protected Date _end;
+    protected GregorianCalendar _start;
+    protected GregorianCalendar _end;
     protected String _duration;
     protected String _subjectAbbr;
     protected String _subjectUrl;
@@ -41,19 +41,19 @@ public class PersonalCalendarEntry {
         this._type = _type;
     }
 
-    public Date get_start() {
+    public GregorianCalendar get_start() {
         return _start;
     }
 
-    public void set_start(Date _start) {
+    public void set_start(GregorianCalendar _start) {
         this._start = _start;
     }
 
-    public Date get_end() {
+    public GregorianCalendar get_end() {
         return _end;
     }
 
-    public void set_end(Date _end) {
+    public void set_end(GregorianCalendar _end) {
         this._end = _end;
     }
 

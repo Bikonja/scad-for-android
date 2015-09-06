@@ -60,7 +60,7 @@ public class HtmlParseScadAuthenticate implements ScadAuthenticate {
         String url = portalUrl + "/?q=inlo&destination=inlo";
 
         HttpGet httpGet = new HttpGet(url);
-        HttpResponse getResponse = httpClient.execute(httpGet);
+        httpClient.execute(httpGet);
 
         HttpPost httpPost = new HttpPost(url);
 

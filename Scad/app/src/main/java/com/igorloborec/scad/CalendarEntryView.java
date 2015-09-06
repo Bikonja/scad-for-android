@@ -1,21 +1,31 @@
 package com.igorloborec.scad;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.provider.CalendarContract;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.igorloborec.scad.data.PersonalCalendarEntry;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 public class CalendarEntryView extends RelativeLayout {
     private TextView calendar_entry_start_time;
     private TextView calendar_entry_end_time;
     private LinearLayout calendar_entry_right_side;
     private TextView calendar_entry_text;
+    private ImageView calendar_add_alarm;
 
     public static CalendarEntryView inflate(ViewGroup parent) {
         CalendarEntryView itemView = (CalendarEntryView)LayoutInflater.from(parent.getContext())
@@ -42,11 +52,12 @@ public class CalendarEntryView extends RelativeLayout {
         calendar_entry_end_time = (TextView) findViewById(R.id.calendar_entry_end_time);
         calendar_entry_right_side = (LinearLayout) findViewById(R.id.calendar_entry_right_side);
         calendar_entry_text = (TextView) findViewById(R.id.calendar_entry_text);
+        calendar_add_alarm = (ImageView) findViewById(R.id.calendar_add_alarm);
     }
 
-    public void setItem(PersonalCalendarEntry item) {
-        calendar_entry_start_time.setText(String.format("%02d:%02d", item.get_start().getHours(), item.get_start().getMinutes()));
-        calendar_entry_end_time.setText(String.format("%02d:%02d", item.get_end().getHours(), item.get_end().getMinutes()));
+    public void setItem(final PersonalCalendarEntry item) {
+        calendar_entry_start_time.setText(String.format("%02d:%02d", item.get_start().get(Calendar.HOUR_OF_DAY), item.get_start().get(Calendar.MINUTE)));
+        calendar_entry_end_time.setText(String.format("%02d:%02d", item.get_end().get(Calendar.HOUR_OF_DAY), item.get_end().get(Calendar.MINUTE)));
         calendar_entry_text.setText(getEntryText(item));
         switch (item.get_type()) {
             case FAILED:
@@ -78,6 +89,21 @@ public class CalendarEntryView extends RelativeLayout {
                 calendar_entry_right_side.setBackgroundColor(getResources().getInteger(R.integer.CalendarEntry_BgColor_OTHER));
                 break;
         }
+        calendar_add_alarm.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(Intent.ACTION_INSERT)
+                        .setData(CalendarContract.Events.CONTENT_URI)
+                        .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, item.get_start().getTimeInMillis())
+                        .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, item.get_end().getTimeInMillis())
+                        .putExtra(CalendarContract.Events.TITLE, item.get_subjectAbbr())
+                        .putExtra(CalendarContract.Events.DESCRIPTION, item.get_subjectGroup())
+                        .putExtra(CalendarContract.Events.EVENT_LOCATION, item.get_location());
+                getContext().startActivity(intent);
+
+            }
+        });
     }
 
     private String getEntryText(PersonalCalendarEntry item) {

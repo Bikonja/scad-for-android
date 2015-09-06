@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
@@ -52,15 +53,21 @@ public class PersonalCalendarParser {
             Elements subjectLinks = popupBox.select("a");
             String subjectUrl = subjectLinks != null && !subjectLinks.isEmpty() ? subjectLinks.get(0).attr("href") : "";
             String subjectLocation = popupLines[1].trim();
-            Date subjectStart = null;
-            Date subjectEnd = null;
+            GregorianCalendar subjectStart = null;
+            GregorianCalendar subjectEnd = null;
             String subjectDuration = "";
             Matcher matcher = datesPattern.matcher(popupBox.text());
             if (matcher.find())
             {
                 try {
-                    subjectStart = dateFormatter.parse(matcher.group(1) + " " + matcher.group(2));
-                    subjectEnd = dateFormatter.parse(matcher.group(1) + " " + matcher.group(3));
+                    subjectStart = new GregorianCalendar();
+                    subjectStart.set(Calendar.SECOND, 0);
+                    subjectStart.set(Calendar.MILLISECOND, 0);
+                    subjectStart.setTime(dateFormatter.parse(matcher.group(1) + " " + matcher.group(2)));
+                    subjectEnd = new GregorianCalendar();
+                    subjectEnd.set(Calendar.SECOND, 0);
+                    subjectEnd.set(Calendar.MILLISECOND, 0);
+                    subjectEnd.setTime(dateFormatter.parse(matcher.group(1) + " " + matcher.group(3)));
                     subjectDuration = matcher.group(4);
                 } catch (ParseException e) {
                     e.printStackTrace();
